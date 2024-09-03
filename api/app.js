@@ -5,6 +5,8 @@ const User = require("./models/User");
 const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
+const imageDownloader = require("image-downloader");
+const path = require("path");
 const app = express();
 
 const connectDB = require("./db/connect");
@@ -79,6 +81,35 @@ app.get("/logout", (req, res) => {
     .status(200)
     .cookie("token", "", { httpOnly: true, expires: new Date(0) })
     .json({ message: "Logged out successfully" });
+});
+
+app.post("/upload-by-link", async (req, res) => {
+  const { link } = req.body;
+  if (!link) {
+    return res.status(400).json({ message: "Link is required" });
+  }
+
+  const __dirname = path.resolve(path.dirname(decodeURI(req.url)));
+  const newName = "photo-" + Date.now() + ".jpg";
+  await imageDownloader
+    .image({
+      url: link,
+      dest: path.join(
+        __dirname,
+        "projects/react-js/react-airbnb-clone/public",
+        newName
+      ),
+    })
+    .then(() => {
+      res.status(201).json({
+        success: true,
+        message: "Images downloaded successfully",
+        image: `/public/${newName}`,
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({ success: false, message: err.message });
+    });
 });
 
 const port = process.env.PORT || 3000;
