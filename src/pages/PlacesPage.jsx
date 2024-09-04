@@ -23,14 +23,36 @@ export default function PlacesPage() {
   }, [action]);
 
   function AddByLink() {
+    if (imageLink === "" || imageLink === null) {
+      return;
+    } else {
+      axios
+        .post("/upload-by-link", {
+          link: imageLink,
+        })
+        .then((response) => {
+          const { image } = response.data;
+          setImages((current) => {
+            return [...current, image];
+          });
+        });
+    }
+  }
+
+  function AddByFiles(ev) {
+    const files = ev.target.files;
+    const data = new FormData();
+    for (let i = 0; i < files.length; i++) {
+      data.append("files", files[i]);
+    }
     axios
-      .post("/upload-by-link", {
-        link: imageLink,
+      .post("/uploads", data, {
+        headers: { "Content-Type": "multipart/form-data" },
       })
       .then((response) => {
-        const { image } = response.data;
+        const { data } = response;
         setImages((current) => {
-          return [...current, image];
+          return [...current, ...data];
         });
       });
   }
@@ -82,14 +104,7 @@ export default function PlacesPage() {
                 d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
               />
             </svg>
-            <input
-              hidden
-              type="file"
-              multiple
-              id="select-image"
-              accept="image/*"
-              onChange={(e) => setImages(e.target.files)}
-            />
+            <input hidden type="file" multiple onChange={AddByFiles} />
           </label>
           <div class="count ml-auto text-gray-400 text-xs font-semibold">
             0/300

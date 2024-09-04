@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { UserContext } from "../UserContext";
 import LoginPage from "./LoginPage.jsx";
 import { Link, useParams } from "react-router-dom";
@@ -11,6 +11,7 @@ import ProfilePage from "./ProfilePage.jsx";
 export default function Account() {
   const { user, ready } = useContext(UserContext);
   const { subpage } = useParams();
+  const [selected, setSelected] = useState([]);
 
   if (!ready) {
     return <h1>Loading...</h1>;
@@ -32,6 +33,10 @@ export default function Account() {
   function logOut() {
     axios.get("/logout").then(() => (window.location.href = "/"));
     window.location.reload();
+  }
+
+  function handleCbClick(current) {
+    setSelected(current);
   }
   return (
     <>
@@ -110,7 +115,7 @@ export default function Account() {
       ) : subpage == "bookings" ? (
         <BookingsPage />
       ) : (
-        <ProfilePage />
+        <ProfilePage onChange={handleCbClick} selected={selected} />
       )}
     </>
   );

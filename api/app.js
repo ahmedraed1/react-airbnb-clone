@@ -7,9 +7,12 @@ const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
 const imageDownloader = require("image-downloader");
 const path = require("path");
+const multer = require("multer");
+const fs = require("fs");
 const app = express();
 
 const connectDB = require("./db/connect");
+const { console } = require("inspector");
 
 app.use(cookieParser());
 app.use(express.json());
@@ -96,7 +99,7 @@ app.post("/upload-by-link", async (req, res) => {
       url: link,
       dest: path.join(
         __dirname,
-        "projects/react-js/react-airbnb-clone/public",
+        "/projects/react-js/react-airbnb-clone/public",
         newName
       ),
     })
@@ -104,12 +107,35 @@ app.post("/upload-by-link", async (req, res) => {
       res.status(201).json({
         success: true,
         message: "Images downloaded successfully",
-        image: `/public/${newName}`,
+        image: `/${newName}`,
       });
     })
     .catch((err) => {
       res.status(500).json({ success: false, message: err.message });
     });
+});
+
+const __dirname1 = path.resolve(path.dirname(decodeURI("../public")));
+const filesMiddleware = multer({
+  dest: path.join(__dirname1, "/public"),
+});
+app.post("/uploads", filesMiddleware.array("files", 100), (req, res) => {
+  if (req.files === null) {
+    return res.status(400).json({ msg: "No file uploaded" });
+  }
+  const uploadedFiles = [];
+  for (let i = 0; i < req.files.length; i++) {
+    const { path, originalname } = req.files[i];
+    const parts = originalname.split(".");
+    const ext = parts[parts.length - 1];
+    const newPath = path + "." + ext;
+    fs.renameSync(path, newPath);
+    uploadedFiles.push(newPath.replace("\\", ""));
+    const filePath = uploadedFiles[i].split("\\").length - 1;
+    uploadedFiles[i] = "/" + uploadedFiles[i].split("\\")[filePath];
+  }
+
+  res.status(200).json(uploadedFiles);
 });
 
 const port = process.env.PORT || 3000;
