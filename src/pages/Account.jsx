@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { UserContext } from "../UserContext";
 import LoginPage from "./LoginPage.jsx";
 import { Link, useParams } from "react-router-dom";
@@ -11,7 +11,6 @@ import ProfilePage from "./ProfilePage.jsx";
 export default function Account() {
   const { user, ready } = useContext(UserContext);
   const { subpage } = useParams();
-  const [selected, setSelected] = useState([]);
 
   if (!ready) {
     return <h1>Loading...</h1>;
@@ -35,9 +34,6 @@ export default function Account() {
     window.location.reload();
   }
 
-  function handleCbClick(current) {
-    setSelected(current);
-  }
   return (
     <>
       <nav className="w-full flex justify-center mt-8 gap-2 mb-8">
@@ -75,7 +71,7 @@ export default function Account() {
           </svg>
           My bookings
         </Link>
-        <Link className={linkClasses("places")} to={"/account/places/a90"}>
+        <Link className={linkClasses("places")} to={"/account/places/add"}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -115,7 +111,7 @@ export default function Account() {
       ) : subpage == "bookings" ? (
         <BookingsPage />
       ) : (
-        <ProfilePage onChange={handleCbClick} selected={selected} />
+        <ProfilePage />
       )}
     </>
   );

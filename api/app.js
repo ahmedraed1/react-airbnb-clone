@@ -10,6 +10,7 @@ const path = require("path");
 const multer = require("multer");
 const fs = require("fs");
 const app = express();
+const places = require("./models/Place");
 
 const connectDB = require("./db/connect");
 const { console } = require("inspector");
@@ -138,8 +139,22 @@ app.post("/uploads", filesMiddleware.array("files", 100), (req, res) => {
   res.status(200).json(uploadedFiles);
 });
 
+app.post("/places", async (req, res) => {
+  const { token } = req.cookies;
+  if (!token) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
+    if (err) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    const place = await places.create({ ...req.body, owner: decoded.id });
+    res.status(201).json(place);
+  });
+});
+
 const port = process.env.PORT || 3000;
-connectDB();
 app.listen(port, () => {
+  connectDB();
   console.log("Server started on port 3000");
 });
