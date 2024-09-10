@@ -1,21 +1,21 @@
-import { useParams } from "react-router-dom";
-// import { useEffect, useState } from "react";
+import { useState } from "react";
 import AddPlace from "../components/AddPlace";
+import ShowPlaces from "../components/ShowPlaces";
+
 export default function PlacesPage() {
-  const { action } = useParams();
+  const [nav, setNav] = useState(false);
 
   return (
     <>
-      {action === "add" ? (
-        <div>
-          <div className="text-center mb-4">
-            <span className="block text-2xl font-bold">Adding Place</span>
-          </div>
-          <AddPlace />
+      <div>
+        <div className="text-center mb-4">
+          <button className="mr-2" onClick={() => setNav(true)}>
+            Add place
+          </button>
+          <button onClick={() => setNav(false)}>Places</button>
         </div>
-      ) : (
-        <div>PlacesPage</div>
-      )}
+        {nav == true ? <AddPlace /> : <ShowPlaces />}
+      </div>
     </>
   );
 }

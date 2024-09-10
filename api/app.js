@@ -153,6 +153,34 @@ app.post("/places", async (req, res) => {
   });
 });
 
+app.get("/places", async (req, res) => {
+  const { token } = req.cookies;
+  if (!token) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
+    if (err) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    const FindPlaces = await places.find({ owner: decoded.id });
+    res.status(200).json(FindPlaces);
+  });
+});
+
+app.get("/place/:id", async (req, res) => {
+  const { token } = req.cookies;
+  if (!token) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
+    if (err) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    const FindPlace = await places.findById(req.params.id);
+    res.status(200).json(FindPlace);
+  });
+});
+
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   connectDB();

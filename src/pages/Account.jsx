@@ -71,7 +71,7 @@ export default function Account() {
           </svg>
           My bookings
         </Link>
-        <Link className={linkClasses("places")} to={"/account/places/add"}>
+        <Link className={linkClasses("places")} to={"/account/places"}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"

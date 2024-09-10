@@ -1,18 +1,20 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Perks from "./Perks";
+import { useNavigate } from "react-router-dom";
 
 export default function AddPlace() {
+  const navigate = useNavigate();
   const [title, setTitle] = useState(null);
   const [description, setDescription] = useState(null);
   const [imageLink, setImageLink] = useState(null);
   const [images, setImages] = useState([]);
   const [selected, setSelected] = useState([]);
-  const [address, setAddress] = useState("Iraq , Baghdad");
-  const [checkIn, setCheckIn] = useState("10:00");
-  const [checkOut, setCheckOut] = useState("11:00");
-  const [maxGuests, setMaxGuests] = useState("10");
-  const [price, setPrice] = useState("100");
+  const [address, setAddress] = useState(null);
+  const [checkIn, setCheckIn] = useState(null);
+  const [checkOut, setCheckOut] = useState(null);
+  const [maxGuests, setMaxGuests] = useState(null);
+  const [price, setPrice] = useState(0);
 
   //   useEffect(() => {
   //     if (!action) {
@@ -81,6 +83,7 @@ export default function AddPlace() {
       })
       .then((response) => {
         console.log(response.data);
+        navigate("/account/bookings");
       })
       .catch((error) => {
         console.log(error);
@@ -108,6 +111,14 @@ export default function AddPlace() {
             value={imageLink}
             onChange={(e) => setImageLink(e.target.value)}
           />
+          <div class="buttons flex justify-end">
+            <div
+              class="btn border border-indigo-500 p-1 px-4 font-semibold cursor-pointer text-gray-200 ml-2 bg-indigo-500"
+              onClick={AddByLink}
+            >
+              Add Image Link
+            </div>
+          </div>
           <textarea
             class="description bg-gray-100 sec p-3 h-60 border border-gray-300 outline-none"
             spellcheck="false"
@@ -133,29 +144,60 @@ export default function AddPlace() {
                 />
               </svg>
               <input hidden type="file" multiple onChange={AddByFiles} />
+              <div class="images mt-4 grid grid-cols-3 gap-4">
+                {images.map((image, index) => (
+                  <div className="image" key={index}>
+                    <img src={image} alt="" />
+                  </div>
+                ))}
+              </div>
             </label>
             <div class="count ml-auto text-gray-400 text-xs font-semibold">
               0/300
             </div>
           </div>
-
-          <div class="buttons flex justify-end">
-            <div
-              class="btn border border-indigo-500 p-1 px-4 font-semibold cursor-pointer text-gray-200 ml-2 bg-indigo-500"
-              onClick={AddByLink}
-            >
-              Post
-            </div>
-          </div>
+          <input
+            class="title bg-gray-100 border border-gray-300 p-2 mb-4 outline-none"
+            spellcheck="false"
+            placeholder="address"
+            type="text"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+          />
+          <input
+            class="title bg-gray-100 border border-gray-300 p-2 mb-4 outline-none"
+            spellcheck="false"
+            placeholder="checkIn"
+            type="text"
+            value={checkIn}
+            onChange={(e) => setCheckIn(e.target.value)}
+          />
+          <input
+            class="title bg-gray-100 border border-gray-300 p-2 mb-4 outline-none"
+            spellcheck="false"
+            placeholder="checkOut"
+            type="text"
+            value={checkOut}
+            onChange={(e) => setCheckOut(e.target.value)}
+          />
+          <input
+            class="title bg-gray-100 border border-gray-300 p-2 mb-4 outline-none"
+            spellcheck="false"
+            placeholder="maxGuests"
+            type="text"
+            value={maxGuests}
+            onChange={(e) => setMaxGuests(e.target.value)}
+          />
+          <input
+            class="title bg-gray-100 border border-gray-300 p-2 mb-4 outline-none"
+            spellcheck="false"
+            placeholder="price"
+            type="text"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+          />
         </div>
 
-        <div class="images mt-4 grid grid-cols-3 gap-4">
-          {images.map((image, index) => (
-            <div className="image" key={index}>
-              <img src={image} alt="" />
-            </div>
-          ))}
-        </div>
         <button onClick={handleSubmit}>Submit</button>
       </div>
     </>
